@@ -22,7 +22,7 @@ exports.handler = async (event, context, callback) => {
                     ablyChannel = realtime.channels.get(channel);
                     channels[channel] = ablyChannel;
                 }
-                channel.publish(type, payload);
+                ablyChannel.publish(type, payload);
                 console.log("Successfully published message to channel = " + channel + ", with message type = " + type + ", and payload = " + JSON.stringify(payload));
             }
             else {
