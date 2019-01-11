@@ -1,7 +1,7 @@
 var Ably = require('ably');
-var realtime = new Ably.Realtime({ key: "RP1cGg.4C1fZA:eIFzJY6tq4QTi0uI" });
+var rest = new Ably.Rest({ key: "RP1cGg.4C1fZA:eIFzJY6tq4QTi0uI" });
 
-exports.handler = async (event, context, callback) => {
+exports.handler = (event, context, callback) => {
     console.log(JSON.stringify(event));
     
     // Initialize all the variables that the request can have
@@ -19,11 +19,19 @@ exports.handler = async (event, context, callback) => {
             if (channel && payload) {
                 let ablyChannel = channels[channel];
                 if (!ablyChannel) {
-                    ablyChannel = realtime.channels.get(channel);
+                    ablyChannel = rest.channels.get(channel);
                     channels[channel] = ablyChannel;
                 }
-                ablyChannel.publish(type, payload);
-                console.log("Successfully published message to channel = " + channel + ", with message type = " + type + ", and payload = " + JSON.stringify(payload));
+                ablyChannel.publish(type, payload, (err) => {
+                    if (err) {
+                        console.log("Error publishing back to ably: " + JSON.stringify(err));
+                        callback(err);
+                    }
+                    else {
+                        callback(null, 'success!');
+                    }
+                });
+                console.log("Successfully started publishing message to channel = " + channel + ", with message type = " + type + ", and payload = " + JSON.stringify(payload));
             }
             else {
                 callback(new Error("Every message must have a channel and payload! Message = " + JSON.stringify(message)));
@@ -31,4 +39,3 @@ exports.handler = async (event, context, callback) => {
         }
     }
 };
-
