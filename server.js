@@ -1,5 +1,6 @@
 var Ably = require('ably');
-var rest = new Ably.Rest({ key: "RP1cGg.4C1fZA:eIFzJY6tq4QTi0uI" });
+var secret_key = require('secret').secret_key;
+var rest = new Ably.Rest({ key: secret_key });
 
 exports.handler = (event, context, callback) => {
     console.log(JSON.stringify(event));
